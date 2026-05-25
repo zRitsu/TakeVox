@@ -1,0 +1,6 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+qrcode==8.2
+cryptography==45.0.4
+numpy==2.4.6
+sounddevice==0.5.5

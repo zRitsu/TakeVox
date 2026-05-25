@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TakeVox Desktop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#07101d",
+              glow: "#67e8f9",
+              mint: "#99f6e4",
+              slateglass: "#0f172acc",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="min-h-screen bg-[linear-gradient(180deg,_#020617_0%,_#08111f_100%)] text-white"
+    data-local-ip="__LOCAL_IP__"
+    data-app-port="__APP_PORT__"
+    data-app-scheme="__APP_SCHEME__"
+    data-desktop-session-id="__DESKTOP_SESSION_ID__"
+    data-desktop-session-key="__DESKTOP_SESSION_KEY__"
+  >
+    <main class="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-8">
+      <header class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-sm uppercase tracking-[0.25em] text-cyan-200/70">TakeVox Desktop</p>
+          <h1 class="text-4xl font-black tracking-tight">Painel do receptor</h1>
+        </div>
+        <a href="/" class="text-sm text-cyan-200/80 underline decoration-white/20 underline-offset-4">voltar</a>
+      </header>
+
+      <section class="mt-8 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+        <div class="rounded-[2rem] border border-white/10 bg-slateglass p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm uppercase tracking-[0.25em] text-slate-400">Sessão</p>
+              <h2 class="text-2xl font-bold">Conectar celular</h2>
+            </div>
+            <button id="new-session" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold hover:bg-white/10">
+              Nova sessão
+            </button>
+          </div>
+
+          <div class="mt-6 grid gap-4 xl:grid-cols-[1fr_auto]">
+            <div class="rounded-3xl bg-[#07111f] p-5">
+              <p class="text-sm text-slate-400">Código da sessão</p>
+              <div id="session-id" class="mt-2 text-4xl font-black tracking-[0.25em] text-glow">----</div>
+              <p class="mt-4 text-sm text-slate-400">Abra no celular</p>
+              <div id="mobile-link" class="mt-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-mint"></div>
+            </div>
+            <div class="mx-auto rounded-3xl bg-white p-4 text-slate-900 xl:mx-0">
+              <img id="qr-image" alt="QR code da sessão" class="block h-40 w-40" />
+            </div>
+          </div>
+
+          <div class="mt-6 grid gap-4 sm:grid-cols-2">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p class="text-sm text-slate-400">Status do celular</p>
+              <p id="mobile-status" class="mt-2 text-xl font-semibold text-amber-300">Aguardando conexão</p>
+            </div>
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p class="text-sm text-slate-400">Áudio</p>
+              <p id="audio-status" class="mt-2 text-xl font-semibold text-slate-200">Pronto para receber</p>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-3xl border border-emerald-300/15 bg-emerald-300/5 p-5 text-sm leading-6 text-slate-300">
+            Para Android liberar o microfone, instale a CA local no aparelho:
+            <code class="mt-2 block break-all rounded-2xl border border-white/10 bg-[#07111f] px-3 py-2 text-cyan-200">certs/takevox-root-ca.pem</code>
+          </div>
+        </div>
+
+        <div class="rounded-[2rem] border border-white/10 bg-slateglass p-6 backdrop-blur">
+          <div class="mt-6 rounded-3xl border border-white/10 bg-white/5 p-3">
+            <div class="grid grid-cols-1 gap-2 rounded-[1.5rem] border border-white/10 bg-[#0a1323] p-2 sm:grid-cols-3">
+              <button
+                type="button"
+                data-panel-tab="driver"
+                class="panel-tab rounded-2xl px-4 py-3 text-sm font-semibold tracking-[0.15em] text-slate-300 transition"
+              >
+                Driver virtual
+              </button>
+              <button
+                type="button"
+                data-panel-tab="recording"
+                class="panel-tab rounded-2xl px-4 py-3 text-sm font-semibold tracking-[0.15em] text-slate-300 transition"
+              >
+                Gravação
+              </button>
+              <button
+                type="button"
+                data-panel-tab="monitor"
+                class="panel-tab rounded-2xl px-4 py-3 text-sm font-semibold tracking-[0.15em] text-slate-300 transition"
+              >
+                Monitor
+              </button>
+            </div>
+
+            <div id="panel-driver" data-panel-content="driver" class="panel-content mt-3 hidden rounded-[1.75rem] bg-[#020817] p-5">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p class="text-sm uppercase tracking-[0.25em] text-slate-400">Driver virtual</p>
+                  <h3 class="mt-1 text-xl font-bold">Saída para outros apps</h3>
+                  <p class="mt-2 max-w-xl text-sm leading-6 text-slate-400">
+                    Escolha um device de saída como <span class="font-semibold text-cyan-200">CABLE Input</span>.
+                    Depois, nos outros apps, selecione o par de entrada correspondente, como <span class="font-semibold text-cyan-200">CABLE Output</span>.
+                  </p>
+                </div>
+                <button id="refresh-devices-btn" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white">
+                  Atualizar
+                </button>
+              </div>
+              <div class="mt-5 grid grid-cols-1 gap-4">
+                <label class="rounded-3xl bg-white/5 p-4">
+                  <span class="text-sm text-slate-400">Saída usada pelo TakeVox</span>
+                  <select id="audio-device-select" class="mt-3 w-full rounded-2xl border border-white/10 bg-[#08111f] px-4 py-3 text-sm font-medium text-cyan-200 outline-none focus:border-cyan-300/40"></select>
+                </label>
+                <label class="rounded-3xl bg-white/5 p-4">
+                  <span class="text-sm text-slate-400">Canais</span>
+                  <select id="audio-channels-select" class="mt-3 w-full rounded-2xl border border-white/10 bg-[#08111f] px-4 py-3 text-sm font-medium text-cyan-200 outline-none focus:border-cyan-300/40">
+                    <option value="1">Mono</option>
+                    <option value="2" selected>Estéreo</option>
+                  </select>
+                </label>
+              </div>
+              <div class="mt-4 rounded-2xl border border-cyan-300/15 bg-cyan-300/5 px-4 py-4">
+                <p class="text-xs uppercase tracking-[0.2em] text-cyan-200/70">Par correspondente no outro app</p>
+                <p id="driver-peer-device" class="mt-2 text-sm font-semibold text-cyan-100">Selecione um device para ver qual entrada usar no Discord, OBS ou gravador.</p>
+                <p class="mt-2 text-sm leading-6 text-slate-400">
+                  No TakeVox você escolhe um device de <span class="font-semibold text-cyan-200">saída</span>, como
+                  <span class="font-semibold text-cyan-200">CABLE Input</span>. No outro app, escolha a
+                  <span class="font-semibold text-cyan-200">entrada</span> pareada, normalmente
+                  <span class="font-semibold text-cyan-200">CABLE Output</span>.
+                </p>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-3">
+                <button id="enable-driver-btn" class="rounded-2xl bg-glow px-4 py-3 text-sm font-bold text-ink">
+                  Ativar driver
+                </button>
+                <button id="disable-driver-btn" class="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-semibold text-amber-100">
+                  Desativar
+                </button>
+              </div>
+              <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300" id="driver-status">
+                Driver virtual desativado.
+              </div>
+              <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-200">Instalação assistida do driver</p>
+                    <p id="driver-install-status" class="mt-1 text-sm text-slate-400">
+                      Verificando se já existe um driver virtual compatível...
+                    </p>
+                  </div>
+                  <button id="install-driver-btn" class="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm font-semibold text-cyan-100">
+                    Baixar e instalar driver
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="panel-recording" data-panel-content="recording" class="panel-content mt-3 hidden rounded-[1.75rem] bg-[#020817] p-5">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm uppercase tracking-[0.25em] text-slate-400">Gravação</p>
+                  <h3 class="mt-1 text-xl font-bold">Controle no PC</h3>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                  <button id="record-start-btn" class="rounded-2xl bg-glow px-4 py-2 text-sm font-bold text-ink">
+                    Iniciar gravação
+                  </button>
+                  <button id="record-stop-btn" class="rounded-2xl border border-amber-300/20 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100 disabled:cursor-not-allowed disabled:opacity-40">
+                    Parar gravação
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-5 grid gap-4 sm:grid-cols-[1fr_140px]">
+                <label class="rounded-3xl bg-[#091221] p-4">
+                  <span class="text-sm text-slate-400">Modelo do nome</span>
+                  <input
+                    id="filename-template"
+                    class="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-cyan-200 outline-none focus:border-cyan-300/40"
+                    value="takevox-desktop.*.wav"
+                  />
+                  <span class="mt-2 block text-xs leading-5 text-slate-500">Use `*` como posição do número. Ex.: `aaaaa.*.wav`</span>
+                </label>
+                <label class="rounded-3xl bg-[#091221] p-4">
+                  <span class="text-sm text-slate-400">Zeros à esquerda</span>
+                  <input
+                    id="filename-padding"
+                    type="number"
+                    min="1"
+                    max="10"
+                    class="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-cyan-200 outline-none focus:border-cyan-300/40"
+                    value="2"
+                  />
+                  <span class="mt-2 block text-xs leading-5 text-slate-500">`5` vira `05` quando padding = 2</span>
+                </label>
+              </div>
+
+              <div id="record-preview-card" class="mt-5 hidden rounded-3xl bg-[#091221] p-4">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm text-slate-400">Preview local</p>
+                    <p id="recording-name" class="mt-1 text-sm font-medium text-cyan-200">sem arquivo</p>
+                  </div>
+                  <span id="recording-meta" class="text-xs uppercase tracking-[0.25em] text-slate-500">0s</span>
+                </div>
+                <audio id="recording-player" class="mt-4 w-full" controls></audio>
+                <div class="mt-4 flex flex-wrap gap-3">
+                  <a id="download-recording-btn" class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+                    Baixar arquivo
+                  </a>
+                  <button id="save-recording-btn" class="rounded-2xl bg-mint px-4 py-3 text-sm font-bold text-ink">
+                    Salvar no PC
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-5 rounded-3xl bg-[#091221] p-4">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-sm text-slate-400">Arquivos salvos</p>
+                    <p class="mt-1 text-xs uppercase tracking-[0.25em] text-slate-500">últimas gravações</p>
+                  </div>
+                  <div class="flex gap-2">
+                    <button id="open-recordings-folder-btn" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white">
+                      Abrir pasta
+                    </button>
+                    <button id="refresh-recordings-btn" class="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white">
+                      Atualizar
+                    </button>
+                  </div>
+                </div>
+                <label class="mt-4 block">
+                  <span class="text-xs uppercase tracking-[0.2em] text-slate-500">Filtrar gravações</span>
+                  <input
+                    id="recordings-search"
+                    class="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-cyan-200 outline-none focus:border-cyan-300/40"
+                    placeholder="Buscar por nome..."
+                  />
+                </label>
+                <div id="saved-recordings-list" class="mt-4 space-y-3"></div>
+              </div>
+            </div>
+
+            <div id="panel-monitor" data-panel-content="monitor" class="panel-content mt-3 hidden rounded-[1.75rem] bg-[#020817] p-5">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-sm uppercase tracking-[0.25em] text-slate-400">Monitor</p>
+                  <h2 class="text-2xl font-bold">Sinal em tempo real</h2>
+                </div>
+                <button id="unlock-audio" class="rounded-2xl bg-glow px-4 py-2 text-sm font-bold text-ink">
+                  Ativar áudio
+                </button>
+              </div>
+
+              <div class="mt-5 rounded-3xl border border-white/10 bg-[#091221] p-4">
+                <div class="flex flex-col gap-4">
+                  <div>
+                    <p class="text-sm text-slate-200">Modo do monitor</p>
+                    <p class="mt-1 text-sm leading-6 text-slate-400">Automático reage ao jitter da rede. Baixo atraso responde mais rápido. Mais estável segura mais buffer contra tremidas.</p>
+                  </div>
+                  <div class="rounded-2xl border border-cyan-300/15 bg-cyan-300/5 px-4 py-3">
+                    <p class="text-[11px] uppercase tracking-[0.22em] text-cyan-200/70">Perfil aplicado</p>
+                    <p id="monitor-mode-status" class="mt-2 text-sm font-semibold text-cyan-100">automatico / baixo atraso</p>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="rounded-2xl border border-cyan-300/15 bg-cyan-300/5 px-3 py-3">
+                      <p class="text-[11px] uppercase tracking-[0.18em] text-cyan-200/75">Latência</p>
+                      <p id="latency-status" class="mt-2 text-xl font-bold text-cyan-100">0 ms</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
+                      <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Jitter</p>
+                      <p id="jitter-status" class="mt-2 text-xl font-bold text-slate-100">0 ms</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
+                      <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Perda</p>
+                      <p id="packet-loss-status" class="mt-2 text-xl font-bold text-slate-100">0</p>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-white/5 px-3 py-3">
+                      <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">Fora de ordem</p>
+                      <p id="packet-order-status" class="mt-2 text-xl font-bold text-slate-100">0</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-4 grid grid-cols-1 gap-2 rounded-[1.25rem] border border-white/10 bg-white/5 p-2 sm:grid-cols-3">
+                  <button id="monitor-mode-auto" type="button" class="rounded-2xl px-4 py-3 text-sm font-semibold transition">
+                    Automatico
+                  </button>
+                  <button id="monitor-mode-low-latency" type="button" class="rounded-2xl px-4 py-3 text-sm font-semibold transition">
+                    Baixo atraso
+                  </button>
+                  <button id="monitor-mode-stable" type="button" class="rounded-2xl px-4 py-3 text-sm font-semibold transition">
+                    Mais estável
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-6 rounded-[1.75rem] bg-[#091221] p-5">
+                <canvas id="meter" class="h-52 w-full rounded-2xl bg-[linear-gradient(180deg,_rgba(10,14,26,0.95),_rgba(2,8,23,0.95))]"></canvas>
+                <div class="mt-4 flex items-center justify-between text-sm text-slate-400">
+                  <span>buffer</span>
+                  <span id="buffer-status">0 frames</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-3xl border border-cyan-300/10 bg-cyan-300/5 p-5 text-sm leading-6 text-slate-300">
+            O monitor do navegador continua disponível para ouvir e gravar. Para usar em Discord, OBS ou outros apps,
+            ative um device virtual compatível, como VB-Cable, na seção acima.
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="/static/desktop.js?v=20260525c"></script>
+  </body>
+</html>

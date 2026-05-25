@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TakeVox</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#08111f",
+              panel: "#0f1b31",
+              signal: "#5eead4",
+              warm: "#f59e0b",
+              mist: "#dbeafe",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-[radial-gradient(circle_at_top,_#18345f_0%,_#08111f_55%,_#020617_100%)] text-white">
+    <main class="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-12">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <section class="space-y-6">
+          <div class="inline-flex rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-mist backdrop-blur">
+            TakeVox • microfone web pela rede local
+          </div>
+          <h1 class="max-w-2xl text-4xl font-black tracking-tight sm:text-6xl">
+            Use o celular como microfone do PC sem instalar app no mobile.
+          </h1>
+          <p class="max-w-2xl text-lg leading-8 text-slate-300">
+            O navegador do celular captura o microfone e envia o áudio pela rede local.
+            O PC recebe tudo em tempo real em outra página web.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <a href="/desktop" class="rounded-2xl bg-signal px-6 py-3 font-semibold text-ink transition hover:scale-[1.02]">
+              Abrir painel do PC
+            </a>
+            <a href="/mobile" class="rounded-2xl border border-white/15 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10">
+              Abrir página mobile
+            </a>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-3">
+            <article class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+              <p class="text-sm uppercase tracking-[0.2em] text-slate-400">1</p>
+              <h2 class="mt-3 text-xl font-semibold">PC cria sessão</h2>
+              <p class="mt-2 text-sm leading-6 text-slate-300">O desktop gera um código e um link para o celular entrar.</p>
+            </article>
+            <article class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+              <p class="text-sm uppercase tracking-[0.2em] text-slate-400">2</p>
+              <h2 class="mt-3 text-xl font-semibold">Celular transmite</h2>
+              <p class="mt-2 text-sm leading-6 text-slate-300">A página mobile pede acesso ao microfone e envia o áudio em tempo real.</p>
+            </article>
+            <article class="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+              <p class="text-sm uppercase tracking-[0.2em] text-slate-400">3</p>
+              <h2 class="mt-3 text-xl font-semibold">PC reproduz</h2>
+              <p class="mt-2 text-sm leading-6 text-slate-300">O navegador do PC toca o áudio recebido com monitoramento visual.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/30 backdrop-blur">
+          <div class="rounded-[1.5rem] bg-slate-950/70 p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Rede local</p>
+                <h2 class="text-2xl font-bold">Conexão rápida</h2>
+              </div>
+              <div class="rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-sm font-medium text-emerald-200">
+                Sem app mobile
+              </div>
+            </div>
+            <div class="mt-6 space-y-4 text-sm text-slate-300">
+              <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p class="text-slate-400">URL sugerida no celular</p>
+                <code class="mt-2 block text-base text-signal">https://__LOCAL_IP__:__APP_PORT__/mobile</code>
+              </div>
+              <div id="driver-callout" class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <p id="driver-callout-title" class="text-slate-400">Importante</p>
+                <p id="driver-callout-body" class="mt-2 leading-6">
+                  Esta versão entrega áudio ao navegador do PC. Para virar um microfone de sistema no Windows,
+                  ainda seria necessário um driver virtual no desktop.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="/static/index.js?v=20260525a"></script>
+  </body>
+</html>
